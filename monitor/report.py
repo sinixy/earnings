@@ -21,7 +21,7 @@ class Filing(EFiling):
         match self.form:
             case '8-K':
                 press_releases = EightK(self).press_releases
-                if not press_releases:
+                if press_releases:
                     return press_releases[0]
         return None
 

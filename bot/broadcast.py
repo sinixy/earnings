@@ -11,10 +11,13 @@ from models.summary import ReportSummary
 async def broadcast(report: Report, report_summary: ParsedChatCompletion[ReportSummary]):
     rsum = report_summary.choices[0].message.parsed
     fin = rsum.financial_metrics
-    text = f"📈 <b>{report.ticker}</b>\n\n" \
-    f"<i>(in {fin.units})</i>\nRevenue: {fin.revenue_gaap} ({fin.revenue_adjusted})\nEPS: {fin.eps_gaap} ({fin.eps_adjusted})\n"
-    if fin.free_cash_flow:
-        text += f"Free cash flow: {fin.free_cash_flow}\n"
+    text = f"📈 <b>{report.ticker}</b> – {report.company}\n\n"
+    text += f"<i>(in {fin.units})</i>\nRevenue: {fin.revenue_gaap}"
+    if fin.revenue_adjusted: text += f" ({fin.revenue_adjusted} adj)"
+    text += f"\nEPS: {fin.eps_gaap}"
+    if fin.eps_adjusted: text += f" ({fin.eps_adjusted} adj)"
+    text += "\n"
+    if fin.free_cash_flow: text += f"Free cash flow: {fin.free_cash_flow}\n"
     text += '\n'
     
     gd = rsum.guidances
