@@ -12,7 +12,7 @@ async def broadcast(report: Report, report_summary: ParsedChatCompletion[ReportS
     rsum = report_summary.choices[0].message.parsed
     fin = rsum.financial_metrics
     text = f"📈 <b>{report.ticker}</b>\n\n" \
-    f"<i>(in {fin.units})</i>\nRevenue: {fin.revenue_gaap}\nEPS: {fin.eps_gaap}\n"
+    f"<i>(in {fin.units})</i>\nRevenue: {fin.revenue_gaap} ({fin.revenue_adjusted})\nEPS: {fin.eps_gaap} ({fin.eps_adjusted})\n"
     if fin.free_cash_flow:
         text += f"Free cash flow: {fin.free_cash_flow}\n"
     text += '\n'
