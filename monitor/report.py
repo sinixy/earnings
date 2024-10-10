@@ -1,6 +1,7 @@
 from datetime import datetime
 from edgar import Filing as EFiling
-from edgar.company_reports import EightK
+from edgar.company_reports import EightK, PressRelease
+from typing import Union
 
 import models.sessions as sessions
 from utils import asyncify, html_to_text
@@ -14,16 +15,21 @@ class Filing(EFiling):
         self.ticker = ticker
         self.updated = updated
 
-    @asyncify
-    def get_text(self) -> str:
+        self.earnings_release: Union[PressRelease, None] = self.__get_earnings_release()
+
+    def __get_earnings_release(self) -> Union[PressRelease, None]:
         match self.form:
             case '8-K':
                 press_releases = EightK(self).press_releases
-                if not press_releases: return ''
-                html = press_releases[0].attachment.download()
-            case _:
-                html = self.html()
-        return html_to_text(html)
+                if not press_releases:
+                    return press_releases[0]
+        return None
+
+    @asyncify
+    def get_text(self) -> str:
+        if self.earnings_release:
+            return html_to_text(self.earnings_release.attachment.download())
+        return ''
 
     @classmethod
     def from_dict(cls, data: dict):

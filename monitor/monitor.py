@@ -75,7 +75,7 @@ class ReportsMonitor:
                 data = json.loads(message)
                 if data['event'] != 'filing': continue
                 filing_dict = data['data']
-                report = self.reports.get(filing_dict['ticker'])
+                report = self.reports.pop(filing_dict['ticker'], None)
                 if not report: continue
                 report.set_filing(filing_dict)
                 asyncio.create_task(summarize_and_broadcast(report))

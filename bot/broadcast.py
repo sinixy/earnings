@@ -1,5 +1,6 @@
 from asyncio import sleep
 from openai.types.chat.parsed_chat_completion import ParsedChatCompletion
+from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 
 from bot.bot import bot
 from db import db
@@ -11,7 +12,7 @@ async def broadcast(report: Report, report_summary: ParsedChatCompletion[ReportS
     rsum = report_summary.choices[0].message.parsed
     fin = rsum.financial_metrics
     text = f"📈 <b>{report.ticker}</b>\n\n" \
-    f"<i>(in {fin.units})</i>\nRevenue: {fin.revenue}\nEPS: {fin.eps}\n"
+    f"<i>(in {fin.units})</i>\nRevenue: {fin.revenue_gaap}\nEPS: {fin.eps_gaap}\n"
     if fin.free_cash_flow:
         text += f"Free cash flow: {fin.free_cash_flow}\n"
     text += '\n'
@@ -26,12 +27,17 @@ async def broadcast(report: Report, report_summary: ParsedChatCompletion[ReportS
 
     text += "<b>Highlights</b>\n" + "\n".join(rsum.highlights)
 
+    buttons = InlineKeyboardBuilder([
+        [InlineKeyboardButton(text="Earings Release", url=report.filing.earnings_release.url())]
+    ])
+
     msg_cnt = 0
     for user in db.get_users():
         try:
             await bot.send_message(
                 user[0],
                 text,
+                reply_markup=buttons.as_markup(),
                 disable_web_page_preview=True
             )
         except Exception as e:

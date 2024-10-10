@@ -1,12 +1,15 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional, Literal
 
 
 class FinancialMetrics(BaseModel):
     units: Literal['thousands', 'millions']
-    revenue: float
-    eps: float = Field(description='Specify the adjusted non-GAAP value instead of the GAAP value, if there is one')
-    net_earnings: float = Field(description='Specify the adjusted non-GAAP value instead of the GAAP value, if there is one')
+    revenue_gaap: float
+    revenue_adjusted: Optional[float]
+    eps_gaap: float
+    eps_adjusted: Optional[float]
+    net_earnings_gaap: float
+    net_earnings_adjusted: Optional[float]
     free_cash_flow: Optional[float]
 
 class Guidances(BaseModel):
