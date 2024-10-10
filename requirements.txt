@@ -1,0 +1,8 @@
+aiogram==3.13.1
+openai==1.51.0
+python-dotenv==1.0.1
+apscheduler==3.10.4
+finvizfinance==1.1.0
+websockets==13.1
+edgartools==2.29.0
+html2text==2024.2.26
