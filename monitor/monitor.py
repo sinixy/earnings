@@ -60,7 +60,10 @@ class ReportsMonitor:
 
     async def start(self, filings_url: str):
         async def summarize_and_broadcast(report: Report):
-            await broadcast(report, await report.summarize())
+            try:
+                await broadcast(report, await report.summarize())
+            except Exception as e:
+                print(f'[{datetime.now().isoformat()}] {report.ticker} filing {report.filing.accession_no} broadcast error: {e}')
             
         async with connect(filings_url) as websocket:
             await websocket.send(json.dumps({
